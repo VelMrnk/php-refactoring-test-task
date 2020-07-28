@@ -26,17 +26,20 @@ $jsonReader = new JsonFileReader($filePath);
 $transactions = $jsonReader->convertDataToArray();
 
 if (count($transactions) === 0) {
-    return;
+    return null;
 }
 
 foreach ($transactions as $transaction)
 {
     $transaction = new Transaction($transaction['bin'], $transaction['amount'], $transaction['currency']);
-    $totalAmount = $transaction->getAmount();
+    $transactionAmount = $transaction->getAmount();
 
     if ($transaction->getCurrency() !== 'EUR') {
-        $rates = (new ExchangeRatesProvider('https://api.exchangeratesapi.io/latest'))->getRates();
-        $totalAmount = (new EuroConverter())->convert($rates, $transaction->getCurrency(), $totalAmount);
+        $exchangeRates = new ExchangeRatesProvider('https://api.exchangeratesapi.io/latest');
+        $rates = $exchangeRates->getRates()['rates'];
+
+        $euroConverter = new EuroConverter();
+        $transactionAmount = $euroConverter->convert($rates, $transaction->getCurrency(), $transactionAmount);
     }
 
     $cardDataProvider = new CardDataProvider('https://lookup.binlist.net');
@@ -55,7 +58,7 @@ foreach ($transactions as $transaction)
     $isEurope = $europeChecker->isEurope($cardData->country->alpha2);
 
     $commission = new Commission();
-    $commissionAmount = $commission->calculateTransactionFee($totalAmount, $isEurope);
+    $commissionAmount = $commission->calculateTransactionFee($transactionAmount, $isEurope);
     $roundedFormat = (new CeilingHelper())->ceil($commissionAmount, 2);
 
     $result = "$roundedFormat\n";

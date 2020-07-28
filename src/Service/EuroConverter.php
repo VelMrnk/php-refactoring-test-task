@@ -2,16 +2,16 @@
 
 namespace App\Service;
 
-class EuroConverter
+class EuroConverter implements EuroConverterInterface
 {
-    public function convert($rates, string $currency, float $totalAmount): float
+    public function convert(array $rates, string $currency, float $amount): float
     {
-        $currentRate = $rates['rates'][$currency] ?? 0;
+        $convertRate = $rates[$currency] ?? 0;
 
-        if (isset($rates['rates'][$currency])) {
-            $totalAmount = $totalAmount / $currentRate;
+        if (isset($rates[$currency])) {
+            $amount = $amount / $convertRate;
         }
 
-        return $totalAmount;
+        return $amount;
     }
 }
