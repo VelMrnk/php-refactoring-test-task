@@ -4,5 +4,5 @@ namespace App\DataProvider;
 
 interface CardDataProviderInterface
 {
-   public function getInfoByBinCode(string $binCode): string ;
+   public function getCardInfo(string $url): array;
 }

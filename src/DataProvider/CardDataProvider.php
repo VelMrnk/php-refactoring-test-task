@@ -2,32 +2,31 @@
 
 namespace App\DataProvider;
 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 class CardDataProvider implements CardDataProviderInterface
 {
-    private string $url;
+    private HttpClientInterface $httpClient;
 
-    public function __construct(string $sourceUrl)
+    public function __construct(HttpClientInterface $httpClient)
     {
-        $this->url = $sourceUrl;
+        $this->httpClient = $httpClient;
     }
 
     /**
-     * @param string $binCode
+     * @param string $url
      * @return array
-     * @throws \Exception
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function getInfoByBinCode(string $binCode): string
+    public function getCardInfo(string $url): array
     {
-        $creditCardInfo = file_get_contents($this->url . '/' . $binCode);
+        $response = $this->httpClient->request('GET', $url);
+        
 
-        if ($creditCardInfo === false) {
-            throw new \Exception('Card info was not found in the provided resource: '
-                . $this->url
-                . "\n"
-                . 'Please make sure the resource is available, bin code is correct and you have not overcome the limits.'
-            );
-        }
-
-        return $creditCardInfo;
+        return $response->toArray();
     }
 }
