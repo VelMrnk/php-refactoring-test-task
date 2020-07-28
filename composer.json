@@ -1,0 +1,12 @@
+{
+    "name": "valentinemurnik/comission-rate",
+    "description": "Refactoring the service to calculate transaction fees.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Valentine Murnik",
+            "email": "valentinemurnik@gmail.com"
+        }
+    ],
+    "require": {}
+}
