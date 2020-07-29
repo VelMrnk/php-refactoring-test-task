@@ -1,5 +1,5 @@
 <?php
-/**
+
 namespace App\Tests;
 
 use App\Service\CeilingHelper;
@@ -8,14 +8,15 @@ use PHPUnit\Framework\TestCase;
 class CeilingHelperTest extends TestCase
 {
 
+    /**
      * @dataProvider dataProvider
      * @param float $before
      * @param float $expected
-
+    */
     public function testCeil(float $before, float $expected)
     {
         $ceilingHelper = new CeilingHelper();
-        $this->assertSame( $ceilingHelper->ceil($before, 2), $expected);
+        $this->assertSame($ceilingHelper->ceil($before, 2), $expected);
     }
 
     public function dataProvider(): array
@@ -28,4 +29,4 @@ class CeilingHelperTest extends TestCase
             [0.18129, 0.19]
         ];
     }
-}  */
+}

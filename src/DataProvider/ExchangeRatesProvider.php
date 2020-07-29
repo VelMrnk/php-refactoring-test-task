@@ -2,8 +2,6 @@
 
 namespace App\DataProvider;
 
-use App\Service\ExchangeRatesProviderInterface;
-
 class ExchangeRatesProvider implements ExchangeRatesProviderInterface
 {
     private string $url;

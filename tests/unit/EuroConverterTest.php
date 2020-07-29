@@ -1,26 +1,19 @@
 <?php
 
-/*
 namespace App\Tests;
 
-use App\DataProvider\ExchangeRatesProvider;
+use App\Service\EuroConverter;
 use PHPUnit\Framework\TestCase;
 
 class EuroConverterTest extends TestCase
 {
-/*
-    public function setUp(): void
-    {
-       // dd($this->createMock(ExchangeRatesProvider::class)->getRates());
-    }
-
     /**
      * @dataProvider dataProvider
      *
      * @param string $currency
      * @param float $amount
      * @param $expected
-
+    */
     public function testConvert(string $currency, float $amount, $expected)
     {
         $euroConverter = new EuroConverter();
@@ -74,4 +67,4 @@ class EuroConverterTest extends TestCase
             "MYR" => 5.0009,
         ];
     }
-}*/
+}

@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+
 class JsonFileReader implements JsonFileReaderInterface
 {
     private string $path;
@@ -9,6 +11,7 @@ class JsonFileReader implements JsonFileReaderInterface
     public function __construct(string $path)
     {
         $this->path = $path;
+        $this->validateFileExists();
     }
 
     public function getContent(): string
@@ -16,7 +19,7 @@ class JsonFileReader implements JsonFileReaderInterface
         return file_get_contents($this->path);
     }
 
-    public function convertDataToArray(): array
+    public function toArray(): array
     {
         $items = [];
 
@@ -31,5 +34,14 @@ class JsonFileReader implements JsonFileReaderInterface
         }
 
         return $items;
+    }
+
+    private function validateFileExists()
+    {
+        if (file_exists($this->path) === false) {
+            throw new FileNotFoundException(
+                'File was not found. Please make sure file name/path are correct and the file exists.'
+            );
+        }
     }
 }

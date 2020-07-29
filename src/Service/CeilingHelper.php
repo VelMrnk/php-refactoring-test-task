@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-class CeilingHelper
+class CeilingHelper implements CeilingHelperInterface
 {
     public function ceil(float $amount, int $precision): float
     {
