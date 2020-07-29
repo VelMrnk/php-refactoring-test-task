@@ -4,5 +4,5 @@ namespace App\DataProvider;
 
 interface ExchangeRatesProviderInterface
 {
-    public function getRates(): array;
+    public function getRates(string $url): array;
 }

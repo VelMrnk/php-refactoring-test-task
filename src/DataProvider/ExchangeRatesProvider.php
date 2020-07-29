@@ -2,31 +2,33 @@
 
 namespace App\DataProvider;
 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 class ExchangeRatesProvider implements ExchangeRatesProviderInterface
 {
-    private string $url;
+    private HttpClientInterface $httpClient;
 
-    public function __construct(string $sourceUrl)
+    public function __construct(HttpClientInterface $httpClient)
     {
-        $this->url = $sourceUrl;
+        $this->httpClient = $httpClient;
     }
 
-    public function getRates(): array
+    public function getRates(string $url): array
     {
-        $rates = @json_decode(file_get_contents($this->url), true);
+        $response = $this->httpClient->request('GET', $url);
 
-        if ($rates == null) {
+        if ($response->getStatusCode() !== 200) {
             /**
              * Maybe here is better to create own Exception. But for the current test task we can use common Exception.
              * If we need separate Exception, please give me feedback about this.
              */
             throw new \Exception('Rates was not uploaded from resource: '
-                . $this->url
+                . $url
                 . "\n"
                 . 'Please make sure the resource is available and correct and you have not overcome the limitations.'
             );
         }
 
-        return $rates;
+        return $response->toArray();;
     }
 }

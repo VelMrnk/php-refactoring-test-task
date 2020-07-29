@@ -29,8 +29,8 @@ foreach ($transactions as $transaction)
     $transactionAmount = $transaction->getAmount();
 
     if ($transaction->getCurrency() !== 'EUR') {
-        $exchangeRates = new ExchangeRatesProvider('https://api.exchangeratesapi.io/latest');
-        $rates = $exchangeRates->getRates()['rates'];
+        $exchangeRates = new ExchangeRatesProvider($httpClient);
+        $rates = $exchangeRates->getRates('https://api.exchangeratesapi.io/latest')['rates'];
 
         $euroConverter = new EuroConverter();
         $transactionAmount = $euroConverter->convert($rates, $transaction->getCurrency(), $transactionAmount);
@@ -49,6 +49,7 @@ foreach ($transactions as $transaction)
 
     $commission = new Commission();
     $commissionAmount = $commission->calculateTransactionFee($transactionAmount, $isEurope);
+
     $roundedFormat = (new CeilingHelper())->ceil($commissionAmount, 2);
 
     $result = "$roundedFormat\n";

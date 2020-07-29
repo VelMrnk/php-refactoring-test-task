@@ -19,6 +19,8 @@ class Commission
      */
     public function calculateTransactionFee(float $transactionAmountInEuro, bool $isEurope): float
     {
-        return $transactionAmountInEuro * ($isEurope ? self::EUROPE_FEE : Commission::WORLD_FEE);
+        $commissionRate = $isEurope ? self::EUROPE_FEE : Commission::WORLD_FEE;
+
+        return $transactionAmountInEuro * $commissionRate;
     }
 }
