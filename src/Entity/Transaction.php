@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-class Transaction
+class Transaction implements TransactionInterface
 {
     private string $binCode;
 
