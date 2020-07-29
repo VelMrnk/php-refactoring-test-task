@@ -1,10 +1,10 @@
-**Refactoring the service to calculate transaction fees.**
+## Refactoring a service that calculates transaction fees.
 
 This is a completed test assignment that checks code refactoring skills.
 
-The task was completed in 6 hours and some improvements were skipped in order to fit into the time frame.
+The task was completed in **6 hours** and some improvements were skipped in order to fit into the time frame.
 
-TODO:
+**TODO:**
 - Add config file instead of Singleton
 - Add better (own) Exceptions.
 - Implement DTO for long dependencies.
