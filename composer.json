@@ -2,12 +2,6 @@
     "name": "valentinemurnik/commission-rate",
     "description": "Refactoring the service to calculate transaction fees.",
     "type": "project",
-    "authors": [
-        {
-            "name": "Valentine Murnik",
-            "email": "valentinemurnik@gmail.com"
-        }
-    ],
     "config": {
         "platform": {
             "php": "7.4"
