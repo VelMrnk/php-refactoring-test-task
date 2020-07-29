@@ -1,3 +1,5 @@
 /vendor/
 /src/app.php
 /src/input.txt
+.DS_Store
+.idea
