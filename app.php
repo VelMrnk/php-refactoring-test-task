@@ -2,56 +2,41 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use App\Config\Config;
 use App\Service\JsonFileReader;
-use App\Entity\Transaction;
+use App\Manager\TransactionFileManager;
+use App\Controller\TransactionFileController;
 use Symfony\Component\HttpClient\HttpClient;
 use App\DataProvider\ExchangeRatesProvider;
-use App\Service\EuroConverter;
 use App\DataProvider\CardDataProvider;
+use App\Service\EuroConverter;
 use App\Service\EuropeChecker;
-use App\Entity\Commission;
-use App\Service\CeilingHelper;
 
-$filePath = $_SERVER['argv'][1];
-
-$jsonReader = new JsonFileReader($filePath);
-$transactions = $jsonReader->toArray();
-
-if (count($transactions) === 0) {
-    return null;
-}
+$input = [
+    'filePath' => $_SERVER['argv'][1]
+];
 
 $httpClient = HttpClient::create();
 
-foreach ($transactions as $transaction)
-{
-    $transaction = new Transaction($transaction['bin'], $transaction['amount'], $transaction['currency']);
-    $transactionAmount = $transaction->getAmount();
+// App.php is kind of front-controller required to define dependencies in kernel
+$kernel = [
+    'jsonReader' => new JsonFileReader($input['filePath']),
+    'transactionFileManager' => new TransactionFileManager(),
+    'exchangeRatesProvider' => new ExchangeRatesProvider($httpClient),
+    'cardDataProvider' => new CardDataProvider($httpClient),
+    'euroConverter' => new EuroConverter(),
+    'europeChecker' => new EuropeChecker()
+];
 
-    if ($transaction->getCurrency() !== 'EUR') {
-        $exchangeRates = new ExchangeRatesProvider($httpClient);
-        $rates = $exchangeRates->getRates('https://api.exchangeratesapi.io/latest')['rates'];
+// Better to save config in file (yml/xml). I used Singleton in order to pass time limits. I know that it`s anti-pattern)
+$config = Config::getInstance();
+$config->setProperty('exchangeRatesProviderUrl', 'https://api.exchangeratesapi.io/latest');
+$config->setProperty('cardDataProviderUrl', 'https://lookup.binlist.net');
 
-        $euroConverter = new EuroConverter();
-        $transactionAmount = $euroConverter->convert($rates, $transaction->getCurrency(), $transactionAmount);
-    }
-
-    $cardDataProvider = new CardDataProvider($httpClient);
-    $cardData = $cardDataProvider->getCardInfo('https://lookup.binlist.net/' . $transaction->getBinCode());
-
-    if ($cardData === null) {
-        // Here can be better exception, but i skip it in order to pass test time limitations
-        throw new \Exception('Please make sure the resource is available and you have not overcome the limitations.');
-    }
-
-    $europeChecker = new EuropeChecker();
-    $isEurope = $europeChecker->isEurope($cardData['country']['alpha2']);
-
-    $commission = new Commission();
-    $commissionAmount = $commission->calculateTransactionFee($transactionAmount, $isEurope);
-
-    $roundedFormat = (new CeilingHelper())->ceil($commissionAmount, 2);
-
-    $result = "$roundedFormat\n";
-    file_put_contents("php://output", $result);
-}
+$transactionController = new TransactionFileController($kernel['jsonReader'], $kernel['transactionFileManager'], $config);
+$transactionController->showCommissions(
+    $kernel['exchangeRatesProvider'],
+    $kernel['cardDataProvider'],
+    $kernel['euroConverter'],
+    $kernel['europeChecker']
+);
