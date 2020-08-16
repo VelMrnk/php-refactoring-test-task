@@ -40,8 +40,8 @@ class TransactionFileController
             $euroConverter,
             $europeChecker,
             $transactions,
-            $this->config->getProperty('exchangeRatesProviderUrl'),
-            $this->config->getProperty('cardDataProviderUrl')
+            $this->config->get('exchangeRatesProviderUrl'),
+            $this->config->get('cardDataProviderUrl')
         );
 
         foreach ($commissions as $commission) {

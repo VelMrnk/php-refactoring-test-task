@@ -8,14 +8,13 @@ use App\Entity\TransactionInterface;
 use App\Fee\CountryService;
 use App\Service\EuropeCheckerInterface;
 
-class FeeCalculatorRegion implements FeeCalculatorInterface
+class FeeCalculatorEurope implements FeeCalculatorInterface
 {
 
     /**
      * @var FeeCalculatorInterface
      */
     private FeeCalculatorInterface $next;
-    private float $coefficient;
     /**
      * @var EuropeCheckerInterface
      */
@@ -24,17 +23,21 @@ class FeeCalculatorRegion implements FeeCalculatorInterface
      * @var CountryService
      */
     private CountryService $countryService;
+    private float $europeanCoefficient;
+    private float $worldCoefficient;
 
     public function __construct(
         FeeCalculatorInterface $next,
-        float $coefficient = 0.01,
         EuropeCheckerInterface $europeChecker,
-        CountryService $countryService
+        CountryService $countryService,
+        float $europeanCoefficient = 0.01,
+        float $worldCoefficient = 0.02
     ) {
         $this->next = $next;
-        $this->coefficient = $coefficient;
         $this->europeChecker = $europeChecker;
         $this->countryService = $countryService;
+        $this->europeanCoefficient = $europeanCoefficient;
+        $this->worldCoefficient = $worldCoefficient;
     }
 
     /**
@@ -47,9 +50,9 @@ class FeeCalculatorRegion implements FeeCalculatorInterface
         $country = $this->countryService->getCountryByBin($transaction->getBinCode());
 
         if($this->europeChecker->isEurope($country->code)) {
-            return $this->next->calculate($amount, $transaction) * $this->coefficient;
+            return $this->next->calculate($amount, $transaction) * $this->europeanCoefficient;
         }
 
-        return $this->next->calculate($amount, $transaction);
+        return $this->next->calculate($amount, $transaction) * $this->worldCoefficient;
     }
 }
